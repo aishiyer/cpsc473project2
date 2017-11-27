@@ -14,7 +14,7 @@ https://www.npmjs.com/package/emberfire-chat
 4. Set up Firebase and connect login, pictures, messages.
 https://github.com/firebase/emberfire
 
-5. Login authentication (login.hbs) <- havent created this yet
+5. LOGIN AUTHENTICATION (login.hbs) <- havent created this yet
 Create a login/register form (also link to EmberFire)
 http://www.greggbolinger.com/simple-form-submission-with-emberjs/
 https://github.com/firebase/emberfire/blob/master/docs/guide/authentication.md <- this is something we should probably use
