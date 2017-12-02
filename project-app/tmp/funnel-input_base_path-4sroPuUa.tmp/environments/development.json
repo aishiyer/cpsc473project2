@@ -1,0 +1,1 @@
+{"modulePrefix":"project-app","environment":"development","firebase":"https://cpsc473project2-5c42a.firebaseio.com","torii":{"sessionServiceName":"session"},"rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"project-app","version":"0.0.0+88a2c73a"},"exportApplicationGlobal":true}
