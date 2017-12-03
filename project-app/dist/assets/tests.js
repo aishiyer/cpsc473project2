@@ -15,6 +15,11 @@ define('project-app/tests/app.lint-test', [], function () {
     assert.ok(true, 'app.js should pass ESLint\n\n');
   });
 
+  QUnit.test('controllers/messages.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/messages.js should pass ESLint\n\n');
+  });
+
   QUnit.test('controllers/pictures.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'controllers/pictures.js should pass ESLint\n\n1:8 - \'Controller\' is defined but never used. (no-unused-vars)\n3:16 - \'Ember\' is not defined. (no-undef)');
@@ -33,6 +38,11 @@ define('project-app/tests/app.lint-test', [], function () {
   QUnit.test('controllers/sign-up.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'controllers/sign-up.js should pass ESLint\n\n9:11 - \'controller\' is assigned a value but never used. (no-unused-vars)');
+  });
+
+  QUnit.test('models/messages.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/messages.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/picture.js', function (assert) {
@@ -438,6 +448,11 @@ define('project-app/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/sign-up-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/messages-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/messages-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/user-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/user-test.js should pass ESLint\n\n');
@@ -518,6 +533,20 @@ define('project-app/tests/unit/controllers/sign-up-test', ['ember-qunit'], funct
   (0, _emberQunit.test)('it exists', function (assert) {
     var controller = this.subject();
     assert.ok(controller);
+  });
+});
+define('project-app/tests/unit/models/messages-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('messages', 'Unit | Model | messages', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
   });
 });
 define('project-app/tests/unit/models/user-test', ['ember-qunit'], function (_emberQunit) {

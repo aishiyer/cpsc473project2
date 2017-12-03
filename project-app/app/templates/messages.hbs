@@ -1,2 +1,15 @@
-<h1>Messages Page</h1>
-<p> Can i put more stuff here?</p>
+<div class="jumbotron">
+  <div class="container">
+    <h1>Messages</h1>
+
+    <!-- Chatting with EmberFire -->
+    {{#each model as |messages|}}
+      <div class="each-msg">{{messages.name}} : {{messages.body}}</div>
+    {{/each}}
+    <div class="new-msg-form">
+      {{input type="text" placeholder="Name" value=name class="name-input"}} {{input type="text" placeholder="Message" value=body class="msg-input"}}
+     <button {{action 'addMessage'}} class ="btn btn-primary"> Submit </button>
+    </div>
+    <!-- {{outlet}} -->
+  </div>
+</div>
