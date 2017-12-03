@@ -53,6 +53,40 @@ define('project-app/components/welcome-page', ['exports', 'ember-welcome-page/co
     }
   });
 });
+define('project-app/controllers/messages', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Controller.extend({
+    sortProperties: ['timestamp'],
+    sortAscending: false, // sorts post by timestamp
+    actions: {
+      addMessage: function addMessage() {
+
+        var name = this.get('name');
+        var body = this.get('body');
+        var newMessage = this.store.createRecord('messages', {
+          name: name,
+          body: body,
+          timestamp: new Date().getTime()
+
+        });
+        //save to database
+        newMessage.save();
+
+        //clear form
+        this.setProperties({
+          name: '',
+          body: '',
+          timestamp: ''
+        });
+      }
+    }
+
+  });
+});
 define('project-app/controllers/pictures', ['exports'], function (exports) {
   'use strict';
 
@@ -460,6 +494,19 @@ define('project-app/instance-initializers/walk-providers', ['exports', 'torii/li
     }
   };
 });
+define('project-app/models/messages', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        name: _emberData.default.attr('string'),
+        body: _emberData.default.attr('string'),
+        timestamp: _emberData.default.attr('number')
+
+    });
+});
 define('project-app/models/picture', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -561,8 +608,12 @@ define('project-app/routes/messages', ['exports'], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var Route = Ember.Route;
-  exports.default = Route.extend({});
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      //return this.store.findRecord();//('message');
+      return this.store.findAll('messages');
+    }
+  });
 });
 define('project-app/routes/pictures', ['exports'], function (exports) {
   'use strict';
@@ -775,7 +826,7 @@ define("project-app/templates/messages", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "V2g36Li6", "block": "{\"symbols\":[],\"statements\":[[6,\"h1\"],[7],[0,\"Messages Page\"],[8],[0,\"\\n\"],[6,\"p\"],[7],[0,\" Can i put more stuff here?\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/messages.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "hlgF9m5N", "block": "{\"symbols\":[\"messages\"],\"statements\":[[6,\"div\"],[9,\"class\",\"jumbotron\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\"Messages\"],[8],[0,\"\\n\\n    \"],[2,\" Chatting with EmberFire \"],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"each-msg\"],[7],[1,[19,1,[\"name\"]],false],[0,\" : \"],[1,[19,1,[\"body\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[6,\"div\"],[9,\"class\",\"new-msg-form\"],[7],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Name\",[20,[\"name\"]],\"name-input\"]]],false],[0,\" \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Message\",[20,[\"body\"]],\"msg-input\"]]],false],[0,\"\\n     \"],[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[3,\"action\",[[19,0,[]],\"addMessage\"]],[7],[0,\" Submit \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\" {{outlet}} \"],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/messages.hbs" } });
 });
 define("project-app/templates/navbar", ["exports"], function (exports) {
   "use strict";
@@ -783,7 +834,7 @@ define("project-app/templates/navbar", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ae+bJrDg", "block": "{\"symbols\":[],\"statements\":[[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n      \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n  \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n\\n\"],[8],[0,\"\\n    \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n  \"],[8],[2,\" /.container-fluid \"],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/navbar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "sfgS86+j", "block": "{\"symbols\":[],\"statements\":[[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n      \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n  \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n\\n\\n\"],[8],[0,\"\\n    \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n  \"],[8],[2,\" /.container-fluid \"],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/navbar.hbs" } });
 });
 define("project-app/templates/pictures", ["exports"], function (exports) {
   "use strict";
@@ -865,6 +916,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("project-app/app")["default"].create({"name":"project-app","version":"0.0.0+88a2c73a"});
+  require("project-app/app")["default"].create({"name":"project-app","version":"0.0.0+10438c22"});
 }
 //# sourceMappingURL=project-app.map
