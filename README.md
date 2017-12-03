@@ -11,6 +11,10 @@ https://stackoverflow.com/questions/14676546/how-file-upload-with-ember-js
 https://github.com/ahaurw01/emberfire-chat
 https://www.npmjs.com/package/emberfire-chat
 
+
+
+DONE:
+
 4. Set up Firebase and connect login, pictures, messages.
 https://github.com/firebase/emberfire
 
