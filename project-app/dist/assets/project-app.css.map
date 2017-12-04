@@ -3,6 +3,7 @@
 	"file": "project-app.css",
 	"sourceRoot": "C:/Users/joshm/OneDrive/Documents/GitHub/cpsc473project2/project-app/app/styles",
 	"sources": [
+<<<<<<< new-josh
 		"../../sass_compiler-input_base_path-pBA1XTyC.tmp/app/styles/app.scss",
 		"../../sass_compiler-input_base_path-pBA1XTyC.tmp/app/styles/_bootstrap.scss",
 		"../../sass_compiler-input_base_path-pBA1XTyC.tmp/app/styles/bootstrap/_variables.scss",
