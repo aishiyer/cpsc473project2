@@ -1,6 +1,7 @@
 # cpsc473project2
 
 What is left to do:
+
 2. RATING (pictures.hbs) Create a form where the user can enter in the title, description.
 
 DONE:
