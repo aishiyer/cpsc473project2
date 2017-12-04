@@ -1,0 +1,26 @@
+<div class="jumbotron">
+  <div class="container">
+    <h1>Vote for a movie</h1>
+
+<div class="input-group">
+  {{input type="text" value=title placeholder="Input a Movie" class="form-control" enter='submit'}}
+  <div class="input-group-btn">
+    <button {{action 'addMovie'}} type="button" class="btn btn-default" tabindex="-1">Submit</button>
+  </div>
+</div>
+
+<ul class="list-group">
+  {{#each model as |ratings|}}
+    <li class="list-group-item">
+      <span>{{ratings.title}}</span>
+      <span {{action 'up'}}     class="glyphicon glyphicon-arrow-up"></span>
+      <span {{action 'down'}}   class="glyphicon glyphicon-arrow-down"></span>
+      <span {{action 'remove'}} class="glyphicon glyphicon-minus"></span>
+      <span>{{ratings.votes}}</span>
+    </li>
+  {{/each}}
+</ul>
+<!-- {{outlet}} -->
+</div>
+
+</div>
