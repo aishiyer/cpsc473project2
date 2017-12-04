@@ -30,6 +30,11 @@ define('project-app/tests/app.lint-test', [], function () {
     assert.ok(true, 'controllers/pictures/new.js should pass ESLint\n\n');
   });
 
+  QUnit.test('controllers/ratings.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/ratings.js should pass ESLint\n\n');
+  });
+
   QUnit.test('controllers/sign-in.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'controllers/sign-in.js should pass ESLint\n\n6:13 - \'controller\' is assigned a value but never used. (no-unused-vars)');
@@ -48,6 +53,11 @@ define('project-app/tests/app.lint-test', [], function () {
   QUnit.test('models/picture.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/picture.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/ratings.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/ratings.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/user.js', function (assert) {
@@ -98,6 +108,11 @@ define('project-app/tests/app.lint-test', [], function () {
   QUnit.test('routes/protected.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'routes/protected.js should pass ESLint\n\n5:5 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('routes/ratings.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/ratings.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/sign-in.js', function (assert) {
@@ -453,9 +468,19 @@ define('project-app/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/sign-up-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/controllers/survey-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/survey-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/messages-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/messages-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/survey-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/survey-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/models/user-test.js', function (assert) {
@@ -502,6 +527,11 @@ define('project-app/tests/tests.lint-test', [], function () {
     assert.expect(1);
     assert.ok(true, 'unit/routes/sign-up-test.js should pass ESLint\n\n');
   });
+
+  QUnit.test('unit/routes/survey-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/survey-test.js should pass ESLint\n\n');
+  });
 });
 define('project-app/tests/unit/controllers/pictures-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
@@ -545,10 +575,38 @@ define('project-app/tests/unit/controllers/sign-up-test', ['ember-qunit'], funct
     assert.ok(controller);
   });
 });
+define('project-app/tests/unit/controllers/survey-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('controller:survey', 'Unit | Controller | survey', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+});
 define('project-app/tests/unit/models/messages-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForModel)('messages', 'Unit | Model | messages', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('project-app/tests/unit/models/survey-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('survey', 'Unit | Model | survey', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -668,6 +726,19 @@ define('project-app/tests/unit/routes/sign-up-test', ['ember-qunit'], function (
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:sign-up', 'Unit | Route | sign up', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('project-app/tests/unit/routes/survey-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:survey', 'Unit | Route | survey', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

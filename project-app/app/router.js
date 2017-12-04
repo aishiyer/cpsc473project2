@@ -16,6 +16,7 @@ Router.map(function() {
   this.route('sign-in');
   this.route('protected');
   this.route('contact');
+  this.route('ratings');
 });
 
 export default Router;

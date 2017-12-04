@@ -61,27 +61,36 @@ define('project-app/controllers/messages', ['exports'], function (exports) {
   });
   exports.default = Ember.Controller.extend({
     sortProperties: ['timestamp'],
-    sortAscending: false, // sorts post by timestamp
+
+    // // sorts post by timestamp
+    sortAscending: false,
     actions: {
       addMessage: function addMessage() {
 
         var name = this.get('name');
         var body = this.get('body');
-        var newMessage = this.store.createRecord('messages', {
-          name: name,
-          body: body,
-          timestamp: new Date().getTime()
+        if (name == '' || body == '') {
 
-        });
+          alert("Please fill out the field before submitting");
+        } else {
+
+          var newMessage = this.store.createRecord('messages', {
+            name: name,
+            body: body,
+            timestamp: new Date().getTime()
+
+          });
+          newMessage.save();
+
+          //clear form
+          this.setProperties({
+            name: '',
+            body: '',
+            timestamp: ''
+          });
+        }
         //save to database
-        newMessage.save();
 
-        //clear form
-        this.setProperties({
-          name: '',
-          body: '',
-          timestamp: ''
-        });
       }
     }
 
@@ -120,6 +129,54 @@ define('project-app/controllers/pictures/new', ['exports'], function (exports) {
         this.transitionTo('pictures');
       }
     }
+  });
+});
+define('project-app/controllers/ratings', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Controller.extend({
+
+    sortAscending: false,
+    sortProperties: ['votes', 'title'],
+    actions: {
+
+      addMovie: function addMovie() {
+
+        var num = 0;
+        var title = this.get('title');
+        if (title !== '') {
+          var newTitle = this.store.createRecord('ratings', {
+            title: title,
+            votes: 1,
+            idNum: num++
+          });
+          newTitle.save();
+        }
+      },
+
+      updateVotes: function updateVotes(ratings, number) {
+        var votes = ratings.get('votes');
+        ratings.set('votes', votes + number);
+        ratings.save();
+      },
+
+      up: function up() {
+        this.store.updateVotes(this.store.get('model'), 1);
+      },
+      down: function down() {
+        this.store.updateVotes(this.store.get('model'), -1);
+      },
+
+      remove: function remove(id) {
+        var ratings = this.store.findRecord('ratings', id);
+        ratings.deleteRecord();
+        ratings.save();
+      }
+    }
+
   });
 });
 define('project-app/controllers/sign-in', ['exports'], function (exports) {
@@ -519,6 +576,18 @@ define('project-app/models/picture', ['exports', 'ember-data'], function (export
     image: _emberData.default.attr()
   });
 });
+define('project-app/models/ratings', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    title: _emberData.default.attr('string'),
+    votes: _emberData.default.attr('number'),
+    idNum: _emberData.default.attr('number')
+  });
+});
 define('project-app/models/user', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -562,6 +631,7 @@ define('project-app/router', ['exports', 'project-app/config/environment'], func
     this.route('sign-in');
     this.route('protected');
     this.route('contact');
+    this.route('ratings');
   });
 
   exports.default = Router;
@@ -620,7 +690,7 @@ define('project-app/routes/messages', ['exports'], function (exports) {
   });
   exports.default = Ember.Route.extend({
     model: function model() {
-      //return this.store.findRecord();//('message');
+
       return this.store.findAll('messages');
     }
   });
@@ -660,6 +730,18 @@ define('project-app/routes/protected', ['exports'], function (exports) {
       if (!this.get('session.isAuthenticated')) {
         this.transitionTo('application');
       }
+    }
+  });
+});
+define('project-app/routes/ratings', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      return this.store.findAll('ratings');
     }
   });
 });
@@ -812,7 +894,7 @@ define("project-app/templates/application", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "BNCSUZLL", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n  \"],[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n\\n\\n        \"],[8],[0,\"\\n        \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n        \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n\\n    \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"messages\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Discussion Board\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"pictures\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Rating\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"contact\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Contact\"],[8]],\"parameters\":[]},null],[0,\"\\n\\n  \"],[8],[0,\"\\n      \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n    \"],[8],[2,\" /.container-fluid \"],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/application.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "SDT0qlST", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n  \"],[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n\\n\\n        \"],[8],[0,\"\\n        \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n        \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n\\n    \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"messages\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Discussion Board\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"pictures\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Pictures Library\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"ratings\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Ratings\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"contact\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Contact\"],[8]],\"parameters\":[]},null],[0,\"\\n\\n  \"],[8],[0,\"\\n      \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n    \"],[8],[2,\" /.container-fluid \"],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/application.hbs" } });
 });
 define("project-app/templates/contact", ["exports"], function (exports) {
   "use strict";
@@ -844,7 +926,7 @@ define("project-app/templates/messages", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "obtrjpdz", "block": "{\"symbols\":[\"messages\"],\"statements\":[[6,\"div\"],[9,\"class\",\"jumbotron\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\"Discussion Board\"],[8],[0,\"\\n\\n    \"],[2,\" Chatting with EmberFire \"],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"each-msg\"],[7],[1,[19,1,[\"name\"]],false],[0,\" : \"],[1,[19,1,[\"body\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[6,\"div\"],[9,\"class\",\"new-msg-form\"],[7],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Name\",[20,[\"name\"]],\"name-input\"]]],false],[0,\" \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Message\",[20,[\"body\"]],\"msg-input\"]]],false],[0,\"\\n     \"],[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[3,\"action\",[[19,0,[]],\"addMessage\"]],[7],[0,\" Submit \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\" {{outlet}} \"],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"footer\"],[7],[0,\"\\n  \"],[6,\"p\"],[7],[0,\"Group Members: Aishwarya Iyer, Joshua Marvel, Tevisophea Heng, Kimberly Nguyen, Briana Hernandez\"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/messages.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Ob0uUd7x", "block": "{\"symbols\":[\"messages\"],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"jumbotron\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\"Discussion Board\"],[8],[0,\"\\n\\n    \"],[2,\" Chatting with EmberFire \"],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"each-msg\"],[7],[1,[19,1,[\"name\"]],false],[0,\" : \"],[1,[19,1,[\"body\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[6,\"div\"],[9,\"class\",\"new-msg-form\"],[7],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Name\",[20,[\"name\"]],\"name-input\"]]],false],[0,\" \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Message\",[20,[\"body\"]],\"msg-input\"]]],false],[0,\"\\n     \"],[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[3,\"action\",[[19,0,[]],\"addMessage\"]],[7],[0,\" Submit \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\" {{outlet}} \"],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"footer\"],[7],[0,\"\\n  \"],[6,\"p\"],[7],[0,\"Group Members: Aishwarya Iyer, Joshua Marvel, Tevisophea Heng, Kimberly Nguyen, Briana Hernandez\"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/messages.hbs" } });
 });
 define("project-app/templates/navbar", ["exports"], function (exports) {
   "use strict";
@@ -877,6 +959,14 @@ define("project-app/templates/protected", ["exports"], function (exports) {
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "5GRqUi3u", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[7],[0,\"This is our protected content which can only be seen by logged in users.\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/protected.hbs" } });
+});
+define("project-app/templates/ratings", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "B/isYM26", "block": "{\"symbols\":[\"ratings\"],\"statements\":[[6,\"div\"],[9,\"class\",\"jumbotron\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\"Vote for a movie\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"input-group\"],[7],[0,\"\\n  \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\",\"class\",\"enter\"],[\"text\",[20,[\"title\"]],\"Input a Movie\",\"form-control\",\"submit\"]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"input-group-btn\"],[7],[0,\"\\n    \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"btn btn-default\"],[9,\"tabindex\",\"-1\"],[3,\"action\",[[19,0,[]],\"addMovie\"]],[7],[0,\"Submit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"ul\"],[9,\"class\",\"list-group\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"li\"],[9,\"class\",\"list-group-item\"],[7],[0,\"\\n      \"],[6,\"span\"],[7],[1,[19,1,[\"title\"]],false],[8],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"glyphicon glyphicon-arrow-up\"],[3,\"action\",[[19,0,[]],\"up\"]],[7],[8],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"glyphicon glyphicon-arrow-down\"],[3,\"action\",[[19,0,[]],\"down\"]],[7],[8],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"glyphicon glyphicon-minus\"],[3,\"action\",[[19,0,[]],\"remove\"]],[7],[8],[0,\"\\n      \"],[6,\"span\"],[7],[1,[19,1,[\"votes\"]],false],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[2,\" {{outlet}} \"],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/ratings.hbs" } });
 });
 define("project-app/templates/sign-in", ["exports"], function (exports) {
   "use strict";
