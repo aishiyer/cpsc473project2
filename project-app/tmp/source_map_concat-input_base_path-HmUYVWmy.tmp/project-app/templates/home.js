@@ -1,8 +1,0 @@
-define("project-app/templates/home", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "icxeq16T", "block": "{\"symbols\":[\"message\"],\"statements\":[[2,\" <p>Canvas</p> \"],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"cursors\"],[7],[0,\"\\n  \"],[2,\" The mouse pointers will be created here \"],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[1,[25,\"canvas-draw\",null,[[\"action\"],[\"mouseDown\"]]],false],[0,\"\\n\\n\\n\"],[2,\" Chatting with EmberFire \"],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"new-msg-form\"],[7],[0,\"\\n  \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Name\",[20,[\"name\"]],\"name-input\"]]],false],[0,\" \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\",\"class\"],[\"text\",\"Message\",[20,[\"body\"]],\"msg-input\"]]],false],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"btn btn-success\"],[3,\"action\",[[19,0,[]],\"addMessage\"]],[7],[0,\"Submit\"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"each-msg\"],[7],[1,[19,1,[\"name\"]],false],[0,\" : \"],[1,[19,1,[\"body\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\"],[2,\" {{outlet}} \"],[0,\"\\n\\n\"],[6,\"footer\"],[7],[0,\"\\n  \"],[6,\"p\"],[7],[0,\"© Team 6 - CPSC 473 - CSUF\"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/home.hbs" } });
-});
