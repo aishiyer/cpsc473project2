@@ -1,0 +1,20 @@
+<div class = "col-sm-2 col-sm-offset-1">
+  <div class = "nav-categories">
+  <div id = "image-upload-wrapper">
+  <label for="new post">Upload an image</label>
+  <input type="file" name="new-post" id="new-post" />
+</div>
+
+  <ul>
+    <li>{{#link-to "posts"}}All{{/link-to}}</li>
+  </ul>
+</div>
+</div>
+
+<div class="col-sm-8">
+  <div class="photo-container">
+    {{#each sortedPosts as [post]}}
+      {{post-tile post=post}}
+      {{/each}}
+    </div>
+  </div>

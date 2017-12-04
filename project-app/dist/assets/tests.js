@@ -105,6 +105,11 @@ define('project-app/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/sign-up.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/upload.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/upload.js should pass ESLint\n\n');
+  });
+
   QUnit.test('torii-adapters/application.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'torii-adapters/application.js should pass ESLint\n\n');
@@ -397,6 +402,31 @@ define('project-app/tests/helpers/unstub-firebase', ['exports', 'firebase'], fun
     }
   }
 });
+define('project-app/tests/helpers/upload', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function (selector, file, filename) {
+    var input = findWithAssert(selector)[0];
+
+    file.name = filename;
+
+    // This hack is here since we can't mock out the
+    // FileList API easily; we're taking advantage
+    // that we can mutate the FileList DOM API at
+    // runtime to allow us to push files into the <input>
+    var files = [file];
+    input.files.item = function (idx) {
+      return files[idx];
+    };
+    input.files.size = files.length;
+
+    return triggerEvent(selector, 'change');
+  };
+});
 define('project-app/tests/test-helper', ['project-app/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
   'use strict';
 
@@ -491,6 +521,11 @@ define('project-app/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/sign-up-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/sign-up-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/upload-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/upload-test.js should pass ESLint\n\n');
   });
 });
 define('project-app/tests/unit/controllers/pictures-test', ['ember-qunit'], function (_emberQunit) {
@@ -645,6 +680,19 @@ define('project-app/tests/unit/routes/sign-up-test', ['ember-qunit'], function (
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:sign-up', 'Unit | Route | sign up', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('project-app/tests/unit/routes/upload-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:upload', 'Unit | Route | upload', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

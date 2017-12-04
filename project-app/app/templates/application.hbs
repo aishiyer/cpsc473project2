@@ -23,15 +23,13 @@
     {{#link-to 'pictures' tagName="li"}}<a href="">Pictures Library</a>{{/link-to}}
     {{#link-to 'sign-up' tagName="li"}}<a href="">SIGN UP</a>{{/link-to}}
     {{#link-to 'sign-in' tagName="li"}}<a href="">SIGN IN</a>{{/link-to}}
+    {{#link-to 'upload' tagName="li"}}<a href="">upload</a>{{/link-to}}
   </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
 
-  <div class="jumbotron text-center">
-    {{#link-to 'pictures'}}<button class="btn btn-primary">All Pictures</button>{{/link-to}}
-    {{#link-to 'pictures.new'}}<button class="btn btn-primary">Add new pictures</button>{{/link-to}}
-  </div>
+
 
   {{outlet}}
 </div>

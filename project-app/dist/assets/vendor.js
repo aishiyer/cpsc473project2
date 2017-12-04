@@ -71267,6 +71267,2257 @@ createDeprecatedModule('resolver');
   var versionRegExp = exports.versionRegExp = /\d[.]\d[.]\d/;
   var shaRegExp = exports.shaRegExp = /[a-z\d]{8}/;
 });
+;define('ember-file-upload/components/file-dropzone/component', ['exports', 'ember-file-upload/components/file-dropzone/template', 'ember-file-upload/system/data-transfer', 'ember-file-upload/system/uuid', 'ember-file-upload/system/drag-listener'], function (exports, _template, _dataTransfer, _uuid, _dragListener) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var $ = Ember.$,
+      _get = Ember.get,
+      set = Ember.set,
+      computed = Ember.computed;
+  var bind = Ember.run.bind;
+  var service = Ember.inject.service;
+
+
+  var DATA_TRANSFER = 'DATA_TRANSFER' + _uuid.default.short();
+
+  var supported = function () {
+    return typeof window !== 'undefined' && window.document && 'draggable' in document.createElement('span');
+  }();
+
+  var dragListener = new _dragListener.default();
+
+  /**
+    @class file-dropzone
+    @type Ember.Component
+   */
+  exports.default = Ember.Component.extend({
+
+    layout: _template.default,
+
+    /**
+      The name of the queue that files should be
+      added to when they get dropped.
+       @attribute name
+      @type string
+     */
+    name: null,
+
+    supported: supported,
+
+    /**
+      `ondragenter` is called when a file has entered
+      the dropzone.
+       @attribute ondragenter
+      @type function
+     */
+    ondragenter: null,
+
+    /**
+      `ondragleave` is called when a file has left
+      the dropzone.
+       @attribute ondragleave
+      @type function
+     */
+    ondragleave: null,
+
+    /**
+      `ondrop` is called when a file has been dropped.
+       @attribute ondrop
+      @type function
+     */
+    ondrop: null,
+
+    fileQueue: service(),
+
+    /**
+      Whether users can upload content
+      from websites by dragging images from
+      another webpage and dropping it into
+      your app. The default is `false` to
+      prevent cross-site scripting issues.
+       @attribute allowUploadsFromWebsites
+      @type boolean
+      @default false
+     */
+    allowUploadsFromWebsites: false,
+
+    /**
+      This is the type of cursor that should
+      be shown when a drag event happens.
+       Corresponds to `dropEffect`.
+       This is one of the following:
+       - `copy`
+      - `move`
+      - `link`
+       @attribute cursor
+      @type string
+      @default null
+     */
+    cursor: null,
+
+    queue: computed('name', {
+      get: function get() {
+        var queueName = _get(this, 'name');
+        var queues = _get(this, 'fileQueue');
+        return queues.find(queueName) || queues.create(queueName);
+      }
+    }),
+
+    didInsertElement: function didInsertElement() {
+      this._super();
+
+      dragListener.addEventListeners('#' + _get(this, 'elementId'), {
+        dragenter: bind(this, 'didEnterDropzone'),
+        dragleave: bind(this, 'didLeaveDropzone'),
+        dragover: bind(this, 'didDragOver'),
+        drop: bind(this, 'didDrop')
+      });
+    },
+    willDestroyElement: function willDestroyElement() {
+      dragListener.removeEventListeners('#' + _get(this, 'elementId'));
+    },
+    isAllowed: function isAllowed() {
+      return _get(this[DATA_TRANSFER], 'source') === 'os' || _get(this, 'allowUploadsFromWebsites');
+    },
+    didEnterDropzone: function didEnterDropzone(evt) {
+      var dataTransfer = _dataTransfer.default.create({
+        queue: _get(this, 'queue'),
+        source: evt.source,
+        dataTransfer: evt.dataTransfer
+      });
+      this[DATA_TRANSFER] = dataTransfer;
+
+      if (this.isAllowed()) {
+        evt.dataTransfer.dropEffect = _get(this, 'cursor');
+        set(this, 'active', true);
+        set(this, 'valid', _get(dataTransfer, 'valid'));
+
+        if (this.ondragenter) {
+          this.ondragenter(dataTransfer);
+        }
+      }
+    },
+    didLeaveDropzone: function didLeaveDropzone(evt) {
+      set(this[DATA_TRANSFER], 'dataTransfer', evt.dataTransfer);
+      if (this.isAllowed()) {
+        if (evt.dataTransfer) {
+          evt.dataTransfer.dropEffect = _get(this, 'cursor');
+        }
+        if (this.ondragleave) {
+          this.ondragleave(this[DATA_TRANSFER]);
+          this[DATA_TRANSFER] = null;
+        }
+
+        set(this, 'active', false);
+      }
+    },
+    didDragOver: function didDragOver(evt) {
+      set(this[DATA_TRANSFER], 'dataTransfer', evt.dataTransfer);
+      if (this.isAllowed()) {
+        evt.dataTransfer.dropEffect = _get(this, 'cursor');
+      }
+    },
+    didDrop: function didDrop(evt) {
+      var _this = this;
+
+      set(this[DATA_TRANSFER], 'dataTransfer', evt.dataTransfer);
+
+      if (!this.isAllowed()) {
+        evt.dataTransfer.dropEffect = _get(this, 'cursor');
+        this[DATA_TRANSFER] = null;
+        return;
+      }
+
+      // Testing support for dragging and dropping images
+      // from other browser windows
+      var url = void 0;
+
+      var html = this[DATA_TRANSFER].getData('text/html');
+      if (html) {
+        var img = $(html)[1];
+        if (img.tagName === 'IMG') {
+          url = img.src;
+        }
+      }
+
+      if (url == null) {
+        url = this[DATA_TRANSFER].getData('text/uri-list');
+      }
+
+      if (url) {
+        var image = new Image();
+
+        var _url$split$slice = url.split('/').slice(-1),
+            _url$split$slice2 = _slicedToArray(_url$split$slice, 1),
+            filename = _url$split$slice2[0];
+
+        image.crossOrigin = 'anonymous';
+        image.onload = function () {
+          var canvas = document.createElement('canvas');
+          canvas.width = image.width;
+          canvas.height = image.height;
+
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0);
+
+          if (canvas.toBlob) {
+            canvas.toBlob(function (blob) {
+              var _get$_addFiles = _get(_this, 'queue')._addFiles([blob], 'web'),
+                  _get$_addFiles2 = _slicedToArray(_get$_addFiles, 1),
+                  file = _get$_addFiles2[0];
+
+              set(file, 'name', filename);
+            });
+          } else {
+            var binStr = atob(canvas.toDataURL().split(',')[1]),
+                len = binStr.length,
+                arr = new Uint8Array(len);
+
+            for (var i = 0; i < len; i++) {
+              arr[i] = binStr.charCodeAt(i);
+            }
+            var blob = new Blob([arr], { type: 'image/png' });
+            blob.name = filename;
+
+            var _get$_addFiles3 = _get(_this, 'queue')._addFiles([blob], 'web'),
+                _get$_addFiles4 = _slicedToArray(_get$_addFiles3, 1),
+                file = _get$_addFiles4[0];
+
+            set(file, 'name', filename);
+          }
+        };
+        /* eslint-disable no-console */
+        image.onerror = function (e) {
+          console.log(e);
+        };
+        /* eslint-enable no-console */
+        image.src = url;
+      }
+
+      if (this.ondrop) {
+        this.ondrop(this[DATA_TRANSFER]);
+      }
+
+      // Add file(s) to upload queue.
+      set(this, 'active', false);
+      _get(this, 'queue')._addFiles(_get(this[DATA_TRANSFER], 'files'), 'drag-and-drop');
+      this[DATA_TRANSFER] = null;
+    }
+  });
+});
+;define("ember-file-upload/components/file-dropzone/template", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "4fQacgCV", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1,[[25,\"hash\",null,[[\"supported\",\"active\",\"valid\"],[[20,[\"supported\"]],[20,[\"active\"]],[20,[\"valid\"]]]]],[20,[\"queue\"]]]]],\"hasEval\":false}", "meta": { "moduleName": "ember-file-upload/components/file-dropzone/template.hbs" } });
+});
+;define('ember-file-upload/components/file-upload/component', ['exports', 'ember-file-upload/components/file-upload/template', 'ember-file-upload/system/uuid'], function (exports, _template, _uuid) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var _get = Ember.get,
+      computed = Ember.computed,
+      setProperties = Ember.setProperties,
+      getProperties = Ember.getProperties;
+  var service = Ember.inject.service;
+
+
+  var VALID_TAGS = ['a', 'abbr', 'area', 'audio', 'b', 'bdo', 'br', 'canvas', 'cite', 'code', 'command', 'datalist', 'del', 'dfn', 'em', 'embed', 'i', 'iframe', 'img', 'kbd', 'mark', 'math', 'noscript', 'object', 'q', 'ruby', 'samp', 'script', 'small', 'span', 'strong', 'sub', 'sup', 'svg', 'time', 'var', 'video', 'wbr', 'path', 'g', 'use', 'circle'];
+
+  /**
+    `{{file-upload}}` is an element that will open a dialog for
+    users to browse their device for files that they want to upload.
+  
+    For the component to work at its best, each `{{file-upload}}`
+    should be named so the upload can be persisted across pages and
+    show the correct upload percentage when a user visits the page.
+  
+    For a basic use-case of uploading a file after a form is submitted,
+    you can stash the file for later and upload it on the submission of
+    the form.
+  
+    For this example, we'll look at a relatively standard profile form
+    using [`ember-changeset`](https://github.com/DockYard/ember-changeset) to keep track of changes made to the form:
+  
+    ```htmlbars
+    {{#with (changeset model) as |changeset|}}
+      <form submit={{action 'submit' changeset}}>
+        <label for='name'>
+        {{input type='string' value=changeset.name id='name'}}
+  
+        {{#file-upload name="avatar"
+                       accept="image/*"
+                       onfileadd=(route-action 'setAvatar' changeset)}}
+          {{#if changeset.avatar}}
+            <img src={{changeset.avatar.url}}
+            <a id="upload-avatar" tabindex=0>Add a photo of yourself</a>
+          {{else}}
+            <a id="upload-avatar" tabindex=0>Add a photo of yourself</a>
+          {{/if}}
+        {{/file-upload}}
+      </form>
+    {{/with}}
+    ```
+  
+    ```js
+    import Ember from 'ember';
+  
+    export default Ember.Route.extend({
+      actions: {
+        submit: async function (changeset) {
+          if (changeset.avatar) {
+            let file = changeset.avatar;
+            let response = await file.upload('/upload');
+            changeset.set('avatar', {
+              name: file.get('name'),
+              url: response.headers.Location
+            });
+          }
+          this.currentModel.setProperties(changeset.get('change'));
+  
+          return this.currentModel.save();
+        },
+        setAvatar: async function (changeset, file) {
+          changeset.set('avatar', file);
+  
+          // Set the URL so we can see a preview
+          let url = await file.readAsDataURL();
+          file.set('url', url);
+        }
+      }
+    });
+    ```
+  
+    @class file-upload
+    @type Ember.Component
+   */
+  exports.default = Ember.Component.extend({
+    tagName: 'label',
+    classNames: ['file-upload'],
+
+    attributeBindings: ['for'],
+
+    for: computed({
+      get: function get() {
+        return 'file-input-' + _uuid.default.short();
+      }
+    }),
+
+    layout: _template.default,
+
+    /**
+      A list of MIME types / extensions to be accepted by the input
+      @attribute accept
+      @type string
+     */
+    accept: null,
+
+    /**
+      Whether multiple files can be selected when uploading.
+      @attribute multiple
+      @type boolean
+     */
+    multiple: null,
+
+    /**
+      The name of the queue to upload the file to.
+       @attribute name
+      @type string
+      @required
+     */
+    name: null,
+
+    /**
+      If set, disables input and prevents files from being added to the queue
+       @attribute disabled
+      @type boolean
+      @default false
+     */
+    disabled: false,
+
+    /**
+      `onfileadd` is called when a file is selected.
+       When multiple files are selected, this function
+      is called once for every file that was selected.
+       @attribute onfileadd
+      @type function
+      @required
+     */
+    onfileadd: null,
+
+    fileQueue: service(),
+
+    didReceiveAttrs: function didReceiveAttrs() {
+      if (_get(this, 'queue')) {
+        setProperties(_get(this, 'queue'), getProperties(this, 'accept', 'multiple', 'disabled', 'onfileadd'));
+      }
+    },
+
+
+    queue: computed('name', {
+      get: function get() {
+        var queueName = _get(this, 'name');
+        if (queueName != null) {
+          var queues = _get(this, 'fileQueue');
+          return queues.find(queueName) || queues.create(queueName);
+        }
+      }
+    }),
+
+    didInsertElement: function didInsertElement() {
+      var id = _get(this, 'for');
+      Ember.assert('Changing the tagName of {{file-upload}} to "' + _get(this, 'tagName') + '" will break interactions.', _get(this, 'tagName') === 'label');
+      this.$('*').each(function (_, element) {
+        if (element.id !== id && VALID_TAGS.indexOf(element.tagName.toLowerCase()) === -1) {
+          Ember.assert('"' + element.outerHTML + '" is not allowed as a child of {{file-upload}}.');
+        }
+      });
+    },
+
+
+    actions: {
+      change: function change(files) {
+        _get(this, 'queue')._addFiles(files, 'browse');
+        this.$().children('input').val(null);
+      }
+    }
+  });
+});
+;define("ember-file-upload/components/file-upload/template", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "xxZ8kq87", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"input\"],[10,\"id\",[18,\"for\"],null],[9,\"type\",\"file\"],[10,\"accept\",[18,\"accept\"],null],[10,\"multiple\",[18,\"multiple\"],null],[10,\"disabled\",[18,\"disabled\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"change\"],[[\"value\"],[\"target.files\"]]],null],[9,\"style\",\"display: none;\"],[7],[8],[0,\"\\n\"],[11,1],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "ember-file-upload/components/file-upload/template.hbs" } });
+});
+;define('ember-file-upload/computed/sum-by', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function (collectionKey, itemKey) {
+    return computed(collectionKey + '.@each.' + itemKey, function () {
+      var collection = get(this, collectionKey);
+
+      return collection.reduce(function (sum, item) {
+        return sum + get(item, itemKey);
+      }, 0);
+    });
+  };
+
+  var get = Ember.get,
+      computed = Ember.computed;
+});
+;define('ember-file-upload/file', ['exports', 'ember-file-upload/system/file-reader', 'ember-file-upload/system/http-request', 'ember-file-upload/system/uuid'], function (exports, _fileReader, _httpRequest, _uuid) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var RSVP = Ember.RSVP;
+  var computed = Ember.computed,
+      _get = Ember.get,
+      set = Ember.set;
+  var reads = computed.reads;
+
+
+  function normalizeOptions(file, url, options) {
+    if ((typeof url === 'undefined' ? 'undefined' : _typeof(url)) === 'object') {
+      options = url;
+      url = null;
+    }
+
+    options = options || {};
+
+    options.url = options.url || url;
+    options.method = options.method || 'POST';
+    options.accepts = options.accepts || ['application/json', 'text/javascript'];
+    if (!options.hasOwnProperty('contentType')) {
+      options.contentType = _get(file, 'type');
+    }
+    options.headers = options.headers || {};
+    options.data = options.data || {};
+    options.fileKey = options.fileKey || 'file';
+
+    if (options.headers.Accept == null) {
+      if (!Array.isArray(options.accepts)) {
+        options.accepts = [options.accepts];
+      }
+      options.headers.Accept = options.accepts.join(',');
+    }
+
+    // Set Content-Type in the data payload
+    // instead of the headers, since the header
+    // for Content-Type will always be multipart/form-data
+    if (options.contentType) {
+      options.data['Content-Type'] = options.contentType;
+    }
+
+    options.data[options.fileKey] = file.blob;
+
+    options.withCredentials = options.withCredentials || false;
+
+    return options;
+  }
+
+  function _upload(file, url, opts, uploadFn) {
+    if (['queued', 'failed', 'timed_out'].indexOf(_get(file, 'state')) === -1) {
+      Ember.assert('The file ' + file.id + ' is in the state "' + _get(file, 'state') + '" and cannot be requeued.');
+    }
+
+    var options = normalizeOptions(file, url, opts);
+
+    var request = new _httpRequest.default({
+      withCredentials: options.withCredentials,
+      label: options.method + ' ' + _get(file, 'name') + ' to ' + options.url
+    });
+
+    request.open(options.method, options.url);
+
+    Object.keys(options.headers).forEach(function (key) {
+      request.setRequestHeader(key, options.headers[key]);
+    });
+
+    if (options.timeout) {
+      request.timeout = options.timeout;
+    }
+
+    request.onprogress = function (evt) {
+      if (evt.lengthComputable) {
+        set(file, 'loaded', evt.loaded);
+        set(file, 'size', evt.total);
+        set(file, 'progress', evt.loaded / evt.total * 100);
+      }
+    };
+
+    request.ontimeout = function () {
+      set(file, 'state', 'timed_out');
+    };
+
+    request.onabort = function () {
+      set(file, 'state', 'aborted');
+    };
+
+    set(file, 'state', 'uploading');
+
+    // Increment for Ember.Test
+    inflightRequests++;
+
+    var uploadPromise = uploadFn(request, options);
+
+    uploadPromise = uploadPromise.then(function (result) {
+      set(file, 'state', 'uploaded');
+      return result;
+    }, function (error) {
+      set(file, 'state', 'failed');
+      return RSVP.reject(error);
+    }).finally(function () {
+      // Decrement for Ember.Test
+      inflightRequests--;
+    });
+
+    return uploadPromise;
+  }
+
+  var inflightRequests = 0;
+  if (Ember.Test) {
+    Ember.Test.registerWaiter(null, function () {
+      return inflightRequests === 0;
+    });
+  }
+
+  /**
+    Files provide a uniform interface for interacting
+    with data that can be uploaded or read.
+  
+    @class File
+    @extends Ember.Object
+   */
+  exports.default = Ember.Object.extend({
+    init: function init() {
+      this._super();
+      Object.defineProperty(this, 'id', {
+        writeable: false,
+        enumerable: true,
+        value: 'file-' + (0, _uuid.default)()
+      });
+    },
+
+
+    /**
+      A unique id generated for this file.
+       @property
+      @type {String}
+      @readonly
+     */
+    id: null,
+
+    /**
+      The file name.
+       @property name
+      @type {String}
+     */
+    name: computed({
+      get: function get() {
+        return _get(this, 'blob.name');
+      },
+      set: function set(_, name) {
+        return name;
+      }
+    }),
+
+    /**
+      The size of the file in bytes.
+       @property size
+      @type {Number}
+      @readonly
+     */
+    size: reads('blob.size'),
+
+    /**
+      The MIME type of the file.
+       For a image file this may be `image/png`.
+       @property type
+      @type {String}
+      @readonly
+     */
+    type: reads('blob.type'),
+
+    /**
+      Returns the appropriate file extension of
+      the file according to the type
+       @property extension
+      @type {String}
+      @readonly
+     */
+    extension: computed('type', {
+      get: function get() {
+        return _get(this, 'type').split('/').slice(-1)[0];
+      }
+    }),
+
+    /**
+      @property loaded
+      @type {Number}
+      @default 0
+      @readonly
+     */
+    loaded: 0,
+
+    /**
+      @property progress
+      @type {Number}
+      @default 0
+      @readonly
+     */
+    progress: 0,
+
+    /**
+      The current state that the file is in.
+      One of:
+       - `queued`
+      - `uploading`
+      - `timed_out`
+      - `aborted`
+      - `uploaded`
+      - `failed`
+       @property state
+      @type {String}
+      @default 'queued'
+      @readonly
+     */
+    state: 'queued',
+
+    /**
+      The source of the file. This is useful
+      for applications that want to gather
+      analytics about how users upload their
+      content.
+       This property can be one of the following:
+       - `browse`
+      - `drag-and-drop`
+      - `web`
+      - `data-url`
+      - `blob`
+       `browse` is the source when the file is created
+      using the native file picker.
+       `drag-and-drop` is the source when the file was
+      created using drag and drop from their desktop.
+       `web` is the source when the file was created
+      by dragging the file from another webpage.
+       `data-url` is the source when the file is created
+      from a data URL using the `fromDataURL` method for
+      files. This usually means that the file was created
+      manually by the developer on behalf of the user.
+       `blob` is the source when the file is created
+      from a blob using the `fromBlob` method for
+      files. This usually means that the file was created
+      manually by the developer.
+       @property source
+      @type {String}
+      @default ''
+      @readonly
+     */
+    source: '',
+
+    uploadBinary: function uploadBinary(url, opts) {
+      var _this = this;
+
+      opts.contentType = 'application/octet-stream';
+      return _upload(this, url, opts, function (request) {
+        return request.send(_get(_this, 'blob'));
+      });
+    },
+    upload: function upload(url, opts) {
+      var _this2 = this;
+
+      return _upload(this, url, opts, function (request, options) {
+        // Build the form
+        var form = new FormData();
+
+        Object.keys(options.data).forEach(function (key) {
+          if (key === options.fileKey) {
+            form.append(key, options.data[key], _get(_this2, 'name'));
+          } else {
+            form.append(key, options.data[key]);
+          }
+        });
+
+        return request.send(form);
+      });
+    },
+    readAsArrayBuffer: function readAsArrayBuffer() {
+      var reader = new _fileReader.default({ label: 'Read ' + _get(this, 'name') + ' as an ArrayBuffer' });
+      return reader.readAsArrayBuffer(this.blob);
+    },
+    readAsDataURL: function readAsDataURL() {
+      var reader = new _fileReader.default({ label: 'Read ' + _get(this, 'name') + ' as a Data URI' });
+      return reader.readAsDataURL(this.blob);
+    },
+    readAsBinaryString: function readAsBinaryString() {
+      var reader = new _fileReader.default({ label: 'Read ' + _get(this, 'name') + ' as a binary string' });
+      return reader.readAsBinaryString(this.blob);
+    },
+    readAsText: function readAsText() {
+      var reader = new _fileReader.default({ label: 'Read ' + _get(this, 'name') + ' as text' });
+      return reader.readAsText(this.blob);
+    }
+  }).reopenClass({
+
+    /**
+      Creates a file object that can be read or uploaded to a
+      server from a Blob object.
+       @static
+      @method fromBlob
+      @param {Blob} blob The blob to create the file from.
+      @param {String} [source] The source that created the blob.
+      @return {File} A file object
+     */
+    fromBlob: function fromBlob(blob) {
+      var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'blob';
+
+      var file = this.create();
+      Object.defineProperty(file, 'blob', {
+        writeable: false,
+        enumerable: false,
+        value: blob
+      });
+      Object.defineProperty(file, 'source', {
+        writeable: false,
+        value: source
+      });
+
+      return file;
+    },
+
+
+    /**
+      Creates a file object that can be read or uploaded to a
+      server from a data URL.
+       @static
+      @method fromDataURL
+      @param {String} dataURL The data URL to create the file from.
+      @param {String} [source] The source of the data URL.
+      @return {File} A file object
+     */
+    fromDataURL: function fromDataURL(dataURL) {
+      var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'data-url';
+
+      var _dataURL$split = dataURL.split(','),
+          _dataURL$split2 = _slicedToArray(_dataURL$split, 2),
+          typeInfo = _dataURL$split2[0],
+          base64String = _dataURL$split2[1];
+
+      var mimeType = typeInfo.match(/:(.*?);/)[1];
+
+      var binaryString = atob(base64String);
+      var binaryData = new Uint8Array(binaryString.length);
+
+      for (var i = 0, len = binaryString.length; i < len; i++) {
+        binaryData[i] = binaryString.charCodeAt(i);
+      }
+
+      var blob = new Blob([binaryData], { type: mimeType });
+
+      return this.fromBlob(blob, source);
+    }
+  });
+});
+;define('ember-file-upload/helpers/file-queue', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var get = Ember.get;
+  var service = Ember.inject.service;
+  exports.default = Ember.Helper.extend({
+
+    fileQueue: service(),
+
+    compute: function compute(_, hash) {
+      var queues = get(this, 'fileQueue');
+      var queueName = hash['name'];
+      if (queueName) {
+        var queue = queues.find(queueName) || queues.create(queueName);
+        return queue;
+      }
+
+      return queues;
+    }
+  });
+});
+;define('ember-file-upload/mirage/index', ['exports', 'ember-file-upload/mirage/utils', 'ember-file-upload/mirage/shim'], function (exports, _utils) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.upload = upload;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  var RSVP = Ember.RSVP;
+
+
+  var NETWORK = {
+    'wired': 50000, // 500 Mb/s
+    'wifi': 15000, // 15 Mb/s
+    'dsl': 1000, // 1 Mb/s
+    '4g': 3000, // 4 Mb/s
+    '3g': 250, // 250 kb/s
+    '2g': 50, // 50 kb/s
+    'gprs': 20, // 20 kb/s
+    'offline': 0
+  };
+
+  function upload(fn) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { network: null, timeout: null };
+
+    return function (db, request) {
+      var _this = this;
+
+      var speed = Infinity;
+
+      if (NETWORK[options.network]) {
+        speed = NETWORK[options.network] * 1024;
+      }
+
+      var _extractFormData = (0, _utils.extractFormData)(request.requestBody),
+          file = _extractFormData.file,
+          data = _extractFormData.data;
+
+      var loaded = 0;
+      var total = file.value.size;
+
+      return new RSVP.Promise(function (resolve) {
+        var start = new Date().getTime();
+        var metadata = (0, _utils.extractFileMetadata)(file.value);
+
+        var upload = function upload() {
+          var timedOut = options.timeout && new Date().getTime() - start > options.timeout;
+          if (timedOut || loaded >= total) {
+            request.upload.onprogress({
+              lengthComputable: true,
+              total: total,
+              loaded: Math.min(loaded, total)
+            });
+
+            metadata.then(function (metadata) {
+              var response = {
+                requestBody: Object.assign(_defineProperty({}, file.key, metadata), data)
+              };
+              if (timedOut) {
+                response.status = 408;
+              }
+
+              resolve(fn.call(_this, db, response));
+            });
+          } else {
+            request.upload.onprogress({
+              lengthComputable: true,
+              total: total,
+              loaded: loaded
+            });
+
+            loaded += speed / 20;
+            setTimeout(upload, 50);
+          }
+        };
+        upload();
+      });
+    };
+  }
+});
+;define('ember-file-upload/mirage/shim', ['ember-file-upload/system/uuid'], function (_uuid) {
+  'use strict';
+
+  var MAP = 'map_' + _uuid.default.short();
+  var KEYS = 'keys_' + _uuid.default.short();
+
+  // Handle support for FormData#get in browsers that don't
+  // support it, only be done when mirage is included.
+  // Specifically, PhantomJS 👻
+  if (FormData.prototype.get == null) {
+    var append = FormData.prototype.append;
+    FormData.prototype.append = function () {
+      if (this[MAP] == null) {
+        this[MAP] = {};
+      }
+      if (this[KEYS] == null) {
+        this[KEYS] = [];
+      }
+
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      this[MAP][args[0]] = args[1];
+      this[KEYS].push(args[0]);
+      return append.call.apply(append, [this].concat(args));
+    };
+
+    FormData.prototype.get = function (key) {
+      return this[MAP][key];
+    };
+
+    FormData.prototype.entries = function () {
+      return new FormDataIterator(this);
+    };
+  }
+
+  function FormDataIterator(formdata) {
+    this.formdata = formdata;
+    this.index = 0;
+  }
+
+  FormDataIterator.prototype.next = function () {
+    var keys = this.formdata[KEYS];
+    var done = this.index >= keys.length;
+    var key = keys[this.index++];
+    return {
+      done: done,
+      value: [key, this.formdata[MAP][key]]
+    };
+  };
+});
+;define('ember-file-upload/mirage/utils', ['exports', 'ember-file-upload/system/file-reader'], function (exports, _fileReader) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.extractFormData = extractFormData;
+  exports.extractFileMetadata = extractFileMetadata;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var RSVP = Ember.RSVP;
+  function extractFormData(formData) {
+    var data = {};
+    var items = formData.entries();
+    var item = items.next();
+    var file = null;
+    while (!item.done) {
+      var _item$value = _slicedToArray(item.value, 2),
+          key = _item$value[0],
+          value = _item$value[1];
+
+      if (value instanceof Blob) {
+        file = { key: key, value: value };
+      } else {
+        data[key] = value;
+      }
+      item = items.next();
+    }
+
+    return { file: file, data: data };
+  }
+
+  var pipelines = {
+    gif: function gif(file) {
+      var reader = new _fileReader.default();
+      return reader.readAsArrayBuffer(file).then(function (buffer) {
+        var data = new Uint8Array(buffer);
+        var duration = 0;
+        for (var i = 0; i < data.length; i++) {
+          // Find a Graphic Control Extension hex(21F904__ ____ __00)
+          if (data[i] === 0x21 && data[i + 1] === 0xF9 && data[i + 2] === 0x04 && data[i + 7] === 0x00) {
+            // Swap 5th and 6th bytes to get the delay per frame
+            var delay = data[i + 5] << 8 | data[i + 4] & 0xFF;
+
+            // Should be aware browsers have a minimum frame delay
+            // e.g. 6ms for IE, 2ms modern browsers (50fps)
+            duration += delay < 2 ? 10 : delay;
+          }
+        }
+
+        return {
+          duration: duration / 1000,
+          animated: duration > 0
+        };
+      });
+    },
+    image: function image(file, metadata) {
+      return new RSVP.Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () {
+          resolve(img);
+        };
+        img.src = metadata.url;
+      }).then(function (img) {
+        return {
+          width: img.naturalWidth,
+          height: img.naturalHeight
+        };
+      });
+    },
+    video: function video(file, metadata) {
+      var video = document.createElement('video');
+      return new RSVP.Promise(function (resolve) {
+        video.addEventListener('loadeddata', resolve);
+        video.src = metadata.url;
+        document.body.appendChild(video);
+        video.load();
+      }).then(function () {
+        return {
+          duration: video.duration,
+          width: video.videoWidth,
+          height: video.videoHeight
+        };
+      }).finally(function () {
+        document.body.removeChild(video);
+      });
+    },
+    audio: function audio(file, metadata) {
+      var audio = document.createElement('audio');
+      return new RSVP.Promise(function (resolve) {
+        audio.addEventListener('loadeddata', resolve);
+        audio.src = metadata.url;
+        document.body.appendChild(audio);
+        audio.load();
+      }).then(function () {
+        return {
+          duration: audio.duration
+        };
+      }).finally(function () {
+        document.body.removeChild(audio);
+      });
+    }
+  };
+
+  function extractFileMetadata(file) {
+    var metadata = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      extension: file.name.match(/\.(.*)$/)[1]
+    };
+
+    var reader = new _fileReader.default();
+    return reader.readAsDataURL(file).then(function (url) {
+      metadata.url = url;
+
+      var additionalMetadata = [];
+
+      if (metadata.type === 'image/gif') {
+        additionalMetadata.push(pipelines.gif(file, metadata));
+      }
+      if (metadata.type.match(/^image\//)) {
+        additionalMetadata.push(pipelines.image(file, metadata));
+      }
+      if (metadata.type.match(/^video\//)) {
+        additionalMetadata.push(pipelines.video(file, metadata));
+      }
+      if (metadata.type.match(/^audio\//)) {
+        additionalMetadata.push(pipelines.audio(file, metadata));
+      }
+      return RSVP.all(additionalMetadata);
+    }).then(function (additionalMetadata) {
+      additionalMetadata.forEach(function (data) {
+        Object.assign(metadata, data);
+      });
+      return metadata;
+    });
+  }
+});
+;define('ember-file-upload/queue', ['exports', 'ember-file-upload/file', 'ember-file-upload/computed/sum-by'], function (exports, _file, _sumBy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var _get = Ember.get,
+      set = Ember.set,
+      computed = Ember.computed,
+      observer = Ember.observer,
+      next = Ember.run.next;
+  exports.default = Ember.Object.extend({
+    init: function init() {
+      set(this, 'files', Ember.A());
+      set(this, '_dropzones', Ember.A());
+      this._super();
+    },
+    destroy: function destroy() {
+      this._super();
+      _get(this, 'fileQueue.queues').delete(_get(this, 'name'));
+      _get(this, 'files').forEach(function (file) {
+        return set(file, 'queue', null);
+      });
+      set(this, 'files', Ember.A());
+    },
+
+
+    /**
+      The FileQueue service.
+       @property fileQueue
+      @type FileQueue
+     */
+    fileQueue: null,
+
+    /**
+      @method push
+      @param {File} file The file to append to the queue
+     */
+    push: function push(file) {
+      file.queue = this;
+      _get(this, 'fileQueue.files').pushObject(file);
+      _get(this, 'files').pushObject(file);
+    },
+
+
+    /**
+      @private
+      @method _addFiles
+      @param {FileList} fileList The event triggered from the DOM that contains a list of files
+     */
+    _addFiles: function _addFiles(fileList, source) {
+      var onfileadd = _get(this, 'onfileadd');
+      var disabled = _get(this, 'disabled');
+      var files = [];
+
+      if (!disabled) {
+        for (var i = 0, len = fileList.length || fileList.size; i < len; i++) {
+          var fileBlob = fileList.item ? fileList.item(i) : fileList[i];
+          if (fileBlob instanceof Blob) {
+            var file = _file.default.fromBlob(fileBlob, source);
+
+            files.push(file);
+            this.push(file);
+
+            if (onfileadd) {
+              next(onfileadd, file);
+            }
+          }
+        }
+      }
+
+      return files;
+    },
+
+
+    /**
+      @method remove
+      @param {File} file The file to remove from the queue.
+     */
+    remove: function remove(file) {
+      file.queue = null;
+      _get(this, 'fileQueue.files').removeObject(file);
+      _get(this, 'files').removeObject(file);
+    },
+
+
+    /**
+      The unique identifier of the queue.
+       Queue names should be deterministic so they
+      can be retrieved. It's recommended to provide
+      a helpful name.
+       If the queue belongs to a top level collection,
+      photos, the good name for this queue may be `"photos"`.
+       If you're uploading images to an artwork, the
+      best name would incoporate both `"artworks"` and
+      the identifier of the artwork. A good name for this
+      queue may be `"artworks/{{id}}/photos"`, where `{{id}}`
+      is a dynamic segment that is generated from the artwork id.
+       @property name
+      @type string
+      @default null
+     */
+    name: null,
+
+    /**
+      The list of files in the queue. This automatically gets
+      flushed when all the files in the queue have settled.
+       Note that files that have failed need to be manually
+      removed from the queue. This is so they can be retried
+      without resetting the state of the queue, orphaning the
+      file from its queue. Upload failures can happen due to a
+      timeout or a server response. If you choose to use the
+      `abort` method, the file will fail to upload, but will
+      be removed from the requeuing proccess, and will be
+      considered to be in a settled state.
+       @property files
+      @type File[]
+      @default []
+     */
+    files: [],
+
+    /**
+      Flushes the `files` property when they have settled. This
+      will only flush files when all files have arrived at a terminus
+      of their state chart.
+       ```
+          .------.     .---------.     .--------.
+      o--| queued |-->| uploading |-->| uploaded |
+          `------`     `---------`     `--------`
+             ^              |    .-------.
+             |              |`->| aborted |
+             |              |    `-------`
+             |  .------.    |    .---------.
+             `-| failed |<-` `->| timed_out |-.
+             |  `------`         `---------`  |
+             `-------------------------------`
+      ```
+       Files *may* be requeued by the uesr in the `failed` or `timed_out`
+      states.
+       @private
+      @method flushFilesWhenSettled
+     */
+    flushFilesWhenSettled: observer('files.@each.state', function () {
+      var files = _get(this, 'files');
+      var allFilesHaveSettled = files.every(function (file) {
+        return ['uploaded', 'aborted'].indexOf(file.state) !== -1;
+      });
+
+      if (files.length === 0) {
+        return;
+      }
+
+      if (allFilesHaveSettled) {
+        _get(this, 'files').forEach(function (file) {
+          return set(file, 'queue', null);
+        });
+        set(this, 'files', Ember.A());
+      }
+    }),
+
+    /**
+      The aggregate size (in bytes) of all files in the queue.
+       @property size
+      @readonly
+      @type number
+      @default 0
+     */
+    size: (0, _sumBy.default)('files', 'size'),
+
+    /**
+      The aggregate amount of bytes that have been uploaded
+      to the server for all files in the queue.
+       @property loaded
+      @readonly
+      @type number
+      @default 0
+     */
+    loaded: (0, _sumBy.default)('files', 'loaded'),
+
+    /**
+      The current upload progress of the queue, as a number from 0 to 100.
+       @property progress
+      @readonly
+      @type number
+      @default 0
+     */
+    progress: computed('size', 'loaded', {
+      get: function get() {
+        var percent = _get(this, 'loaded') / _get(this, 'size') || 0;
+        return Math.floor(percent * 100);
+      }
+    })
+  });
+});
+;define('ember-file-upload/services/file-queue', ['exports', 'ember-file-upload/queue', 'ember-file-upload/computed/sum-by'], function (exports, _queue, _sumBy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var _get = Ember.get,
+      set = Ember.set,
+      computed = Ember.computed,
+      observer = Ember.observer,
+      once = Ember.run.once;
+  exports.default = Ember.Service.extend({
+
+    /**
+      @private
+      @constructor
+      @method
+      Setup a map of uploaders so they may be
+      accessed by name via the `find` method.
+     */
+    init: function init() {
+      set(this, 'queues', Ember.A());
+      set(this, 'files', Ember.A());
+    },
+
+
+    /**
+      The list of all files in queues. This automatically gets
+      flushed when all the files in the queue have settled.
+       Note that files that have failed need to be manually
+      removed from the queue. This is so they can be retried
+      without resetting the state of the queue, orphaning the
+      file from its queue. Upload failures can happen due to a
+      timeout or a server response. If you choose to use the
+      `abort` method, the file will fail to upload, but will
+      be removed from the requeuing proccess, and will be
+      considered to be in a settled state.
+       @property files
+      @type {File[]}
+      @default []
+     */
+    files: null,
+
+    /**
+      @private
+       Flushes the `files` property when they have settled. This
+      will only flush files when all files have arrived at a terminus
+      of their state chart.
+       ```
+          .------.     .---------.     .--------.
+      o--| queued |-->| uploading |-->| uploaded |
+          `------`     `---------`     `--------`
+             ^              |    .-------.
+             |              |`->| aborted |
+             |              |    `-------`
+             |  .------.    |    .---------.
+             `-| failed |<-` `->| timed_out |-.
+             |  `------`         `---------`  |
+             `-------------------------------`
+      ```
+       Files *may* be requeued by the uesr in the `failed` or `timed_out`
+      states.
+       @method flushFilesWhenSettled
+     */
+    flushFilesWhenSettled: observer('files.@each.state', function () {
+      var files = _get(this, 'files');
+      var allFilesHaveSettled = files.every(function (file) {
+        return ['uploaded', 'aborted'].indexOf(file.state) !== -1;
+      });
+
+      if (files.length === 0) {
+        return;
+      }
+
+      if (allFilesHaveSettled) {
+        _get(this, 'files').forEach(function (file) {
+          return set(file, 'queue', null);
+        });
+        set(this, 'files', Ember.A());
+      }
+    }),
+
+    /**
+      The total size of all files currently being uploaded in bytes.
+       @property size
+      @type Number
+      @default 0
+      @readonly
+     */
+    size: (0, _sumBy.default)('files', 'size'),
+
+    /**
+      The number of bytes that have been uploaded to the server.
+       @property loaded
+      @type Number
+      @default 0
+      @readonly
+     */
+    loaded: (0, _sumBy.default)('files', 'loaded'),
+
+    /**
+      The current progress of all uploads, as a percentage in the
+      range of 0 to 100.
+       @property progress
+      @type Number
+      @default 0
+      @readonly
+     */
+    progress: computed('size', 'loaded', {
+      get: function get() {
+        var percent = _get(this, 'loaded') / _get(this, 'size') || 0;
+        return Math.floor(percent * 100);
+      }
+    }),
+
+    /**
+      Returns a queue with the given name
+       @method find
+      @param {String} name The name of the queue to find
+      @return {Queue} The queue or null if it doesn't exist yet.
+     */
+    find: function find(name) {
+      return _get(this, 'queues').findBy('name', name);
+    },
+
+
+    /**
+      Create a new queue with the given name.
+       @method create
+      @param {String} name The name of the queue to create
+      @return {Queue} The new queue.
+     */
+    create: function create(name) {
+      Ember.assert('Queue names are required to be unique. "' + name + '" has already been reserved.', this.find(name) == null);
+
+      var queue = _queue.default.create({ name: name, fileQueue: this });
+      _get(this, 'queues').push(queue);
+      once(this, 'notifyPropertyChange', 'queues');
+
+      return queue;
+    }
+  });
+});
+;define('ember-file-upload/system/data-transfer', ['exports', 'ember-file-upload/system/trim'], function (exports, _trim) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var _get = Ember.get,
+      computed = Ember.computed;
+
+
+  var getDataSupport = {};
+
+  exports.default = Ember.Object.extend({
+
+    dataTransfer: null,
+
+    queue: null,
+
+    getData: function getData(type) {
+      var dataTransfer = _get(this, 'dataTransfer');
+      if (getDataSupport[type] == null) {
+        try {
+          var data = dataTransfer.getData(type);
+          getDataSupport[type] = true;
+          return data;
+        } catch (e) {
+          getDataSupport[type] = false;
+        }
+      } else if (getDataSupport[type]) {
+        return dataTransfer.getData(type);
+      }
+    },
+
+
+    valid: computed('dataTransfer.files', 'files', {
+      get: function get() {
+        if (_get(this, 'files') == null) {
+          return true;
+        }
+
+        return (_get(this, 'dataTransfer.items.length') || _get(this, 'dataTransfer.files.length')) === _get(this, 'files.length');
+      }
+    }),
+
+    files: computed('queue.multiple', 'queue.accept', 'dataTransfer', {
+      get: function get() {
+        var fileList = _get(this, 'dataTransfer.files');
+        var itemList = _get(this, 'dataTransfer.items');
+
+        if (fileList == null && itemList || itemList != null && fileList != null && itemList.length > fileList.length) {
+          fileList = itemList;
+        }
+
+        if (fileList == null) {
+          return null;
+        }
+
+        var files = Ember.A();
+        if (!_get(this, 'queue.multiple') && fileList.length > 1) {
+          files.push(fileList[0]);
+        } else {
+          for (var i = 0, len = fileList.length; i < len; i++) {
+            files.push(fileList[i]);
+          }
+        }
+
+        var accept = _get(this, 'queue.accept');
+        if (accept == null) {
+          return files;
+        }
+
+        var tokens = Ember.A(accept.split(',').map(function (token) {
+          return (0, _trim.default)(token).toLowerCase();
+        }));
+        var extensions = Ember.A(tokens.filter(function (token) {
+          return token.indexOf('.') === 0;
+        }));
+        var mimeTypes = Ember.A(Ember.A(tokens.filter(function (token) {
+          return token.indexOf('.') !== 0;
+        })).map(function (mimeType) {
+          return new RegExp(mimeType);
+        }));
+
+        return files.filter(function (file) {
+          var extension = null;
+          if (file.name && /(\.[^.]+)$/.test(file.name)) {
+            extension = file.name.toLowerCase().match(/(\.[^.]+)$/)[1];
+          }
+
+          var type = file.type.toLowerCase();
+          return mimeTypes.find(function (mimeType) {
+            return mimeType.test(type);
+          }) || extensions.indexOf(extension) !== -1;
+        });
+      }
+    })
+  });
+});
+;define('ember-file-upload/system/drag-listener', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var _Ember$run = Ember.run,
+      bind = _Ember$run.bind,
+      next = _Ember$run.next,
+      cancel = _Ember$run.cancel;
+
+  var _class = function () {
+    function _class() {
+      _classCallCheck(this, _class);
+
+      this._listeners = Ember.A();
+      this._stack = [];
+
+      // Keep a stack of deferred actions to take
+      // on listeners to provide sane events.
+      // `dragleave` / `dragenter` are called on the
+      // same element back to back, which isn't what
+      // we want to provide as an API.
+      this._events = Ember.A();
+    }
+
+    _createClass(_class, [{
+      key: 'beginListening',
+      value: function beginListening() {
+        var handlers = this._handlers = {
+          dragenter: bind(this, 'dragenter'),
+          dragleave: bind(this, 'dragleave'),
+          dragover: bind(this, 'dragover'),
+          drop: bind(this, 'drop')
+        };
+
+        var body = document.body;
+        body.addEventListener('dragenter', handlers.dragenter, {
+          passive: true
+        });
+        body.addEventListener('dragleave', handlers.dragleave, {
+          passive: true
+        });
+        body.addEventListener('dragover', handlers.dragover, {
+          passive: false
+        });
+        body.addEventListener('drop', handlers.drop, {
+          passive: false
+        });
+      }
+    }, {
+      key: 'endListening',
+      value: function endListening() {
+        var body = document.body;
+        var handlers = this._handlers;
+        body.removeEventListener('dragenter', handlers.dragenter, {
+          passive: true
+        });
+        body.removeEventListener('dragleave', handlers.dragleave, {
+          passive: true
+        });
+        body.removeEventListener('dragover', handlers.dragover, {
+          passive: false
+        });
+        body.removeEventListener('drop', handlers.drop, {
+          passive: false
+        });
+      }
+    }, {
+      key: 'addEventListeners',
+      value: function addEventListeners(selector, handlers) {
+        if (this._listeners.length === 0) {
+          this.beginListening();
+        }
+
+        // Listeners are ordered by most specific to least specific
+        var insertAt = this._listeners.length;
+
+        for (var i = 0, len = this._listeners.length; i < len; i++) {
+          var listener = this._listeners[i];
+          Ember.assert('Cannot add multiple listeners for the same element ' + selector + ', ' + listener.selector, document.querySelector(selector) !== document.querySelector(listener.selector));
+
+          if (document.querySelector(listener.selector + ' ' + selector)) {
+            insertAt = i;
+          }
+        }
+
+        this._listeners.splice(insertAt, 0, { selector: selector, handlers: handlers });
+      }
+    }, {
+      key: 'removeEventListeners',
+      value: function removeEventListeners(selector) {
+        this._listeners.removeObject(this._listeners.findBy('selector', selector));
+        if (this._listeners.length === 0) {
+          this.endListening();
+        }
+      }
+    }, {
+      key: 'findListener',
+      value: function findListener(evt) {
+        return this._listeners.find(function (_ref) {
+          var selector = _ref.selector;
+
+          var element = document.querySelector(selector);
+          return element === evt.target || element.contains(evt.target);
+        });
+      }
+    }, {
+      key: 'getEventSource',
+      value: function getEventSource(evt) {
+        var types = evt.dataTransfer.types || [];
+        var areSomeTypesFiles = false;
+        for (var i = 0, len = types.length; i < len; i++) {
+          if (types[i] === 'Files' || types[i] === 'application/x-moz-file') {
+            areSomeTypesFiles = true;
+            break;
+          }
+        }
+        return areSomeTypesFiles ? 'os' : 'web';
+      }
+    }, {
+      key: 'dragenter',
+      value: function dragenter(evt) {
+        var listener = this.findListener(evt);
+        var lastListener = this._stack[this._stack.length - 1];
+
+        // Trigger dragleave on the previous listener
+        if (lastListener) {
+          this.scheduleEvent('dragleave', lastListener, evt);
+        }
+
+        if (listener) {
+          this.scheduleEvent('dragenter', listener, {
+            source: this.getEventSource(evt),
+            dataTransfer: evt.dataTransfer
+          });
+        }
+        this._listener = listener;
+      }
+    }, {
+      key: 'dragleave',
+      value: function dragleave(evt) {
+        // Trigger a dragleave if the file leaves the browser
+        if (this._stack.length) {
+          this.scheduleEvent('dragleave', this._stack[0], evt);
+          this._listener = null;
+        }
+      }
+    }, {
+      key: 'dragover',
+      value: function dragover(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+
+        var listener = this.findListener(evt);
+        if (listener) {
+          if (this._listener) {
+            this.scheduleEvent('dragleave', this._listener, evt);
+          }
+          this.scheduleEvent('dragenter', listener, {
+            source: this.getEventSource(evt),
+            dataTransfer: evt.dataTransfer
+          });
+          if (this._stack.indexOf(listener) !== -1) {
+            listener.handlers.dragover(evt);
+          }
+        }
+        this._listener = listener;
+      }
+    }, {
+      key: 'scheduleEvent',
+      value: function scheduleEvent(eventName, listener, event) {
+        var isDuplicate = this._events.find(function (queuedEvent) {
+          return queuedEvent.eventName === eventName && queuedEvent.listener === listener;
+        });
+
+        var cancelledEvent = this._events.find(function (queuedEvent) {
+          return queuedEvent.listener === listener && queuedEvent.eventName === 'dragleave' && eventName === 'dragenter' || queuedEvent.eventName === 'dragenter' && eventName === 'dragleave';
+        });
+
+        if (cancelledEvent) {
+          this._events.removeObject(cancelledEvent);
+          if (this._events.length === 0) {
+            cancel(this._scheduled);
+            this._scheduled = null;
+          }
+        } else if (!isDuplicate) {
+          this._events.push({ eventName: eventName, listener: listener, event: event });
+          if (!this._scheduled) {
+            this._scheduled = next(this, 'sendEvents');
+          }
+        }
+      }
+    }, {
+      key: 'sendEvents',
+      value: function sendEvents() {
+        var _this = this;
+
+        this._events.forEach(function (_ref2) {
+          var eventName = _ref2.eventName,
+              listener = _ref2.listener,
+              event = _ref2.event;
+
+          if (eventName === 'dragenter') {
+            _this._stack.push(listener);
+          } else if (eventName === 'dragleave') {
+            _this._stack.pop();
+          }
+          listener.handlers[eventName](event);
+        });
+
+        this._events = Ember.A();
+        this._scheduled = false;
+      }
+    }, {
+      key: 'drop',
+      value: function drop(evt) {
+        this._stack = [];
+        this._events = Ember.A();
+        this._scheduled = false;
+        this._listener = null;
+
+        evt.preventDefault();
+        evt.stopPropagation();
+        var listener = this.findListener(evt);
+        if (listener) {
+          listener.handlers.drop(evt);
+        }
+      }
+    }]);
+
+    return _class;
+  }();
+
+  exports.default = _class;
+});
+;define('ember-file-upload/system/file-reader', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function () {
+    var _this = this;
+
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var _RSVP$defer = RSVP.defer('ember-file-upload: ' + options.label),
+        resolve = _RSVP$defer.resolve,
+        reject = _RSVP$defer.reject,
+        promise = _RSVP$defer.promise;
+
+    var reader = new FileReader();
+
+    reader.onload = resolve;
+    reader.onerror = reject;
+
+    var aborted = void 0;
+    var cancel = function cancel() {
+      if (aborted == null) {
+        aborted = RSVP.defer('ember-file-upload: Abort ' + options.label);
+        reader.abort();
+      }
+      return aborted.promise;
+    };
+    reader.onabort = function () {
+      aborted.resolve();
+    };
+
+    /**
+      Reads the file and returns a promise that will
+      return the blob as ArrayBuffer.
+       @method readAsArrayBuffer
+      @return {Promise} A promise that will return the file as an ArrayBuffer
+     */
+
+    /**
+      Reads the file and returns a promise that will
+      return the blob as data URL.
+       This is useful for reading images to display
+      as a preview in the browser.
+       @method readAsDataURL
+      @return {Promise} A promise that will return the file as a data URL
+     */
+
+    /**
+      Reads the file and returns a promise that will
+      return the blob as binary string.
+       This is useful for reading images or files that
+      are not plain text.
+       @method readAsBinaryString
+      @return {Promise} A promise that will return the file as a binary string
+     */
+
+    /**
+      Reads the file and returns a promise that will
+      return the blob as text.
+       This is useful for reading plain text files.
+       @method readAsText
+      @return {Promise} A promise that will return the file as text
+     */
+    ['readAsArrayBuffer', 'readAsDataURL', 'readAsBinaryString', 'readAsText'].forEach(function (methodName) {
+      _this[methodName] = function (blob) {
+        reader[methodName](blob);
+        var p = promise.then(function () {
+          return reader.result;
+        }, function () {
+          return RSVP.reject(reader.error);
+        }, 'ember-file-upload: Unpack ' + options.label);
+        p.cancel = cancel;
+        return p;
+      };
+    });
+  };
+
+  var RSVP = Ember.RSVP;
+});
+;define('ember-file-upload/system/http-request', ['exports', 'ember-file-upload/system/trim'], function (exports, _trim) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function () {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var _RSVP$defer = RSVP.defer('ember-file-upload: ' + options.label),
+        resolve = _RSVP$defer.resolve,
+        reject = _RSVP$defer.reject,
+        promise = _RSVP$defer.promise;
+
+    var request = new XMLHttpRequest();
+
+    request.withCredentials = options.withCredentials;
+
+    var aborted = void 0;
+    promise.cancel = function () {
+      if (aborted == null) {
+        aborted = RSVP.defer('ember-file-upload: Abort ' + options.label);
+        request.abort();
+      }
+      return aborted.promise;
+    };
+    promise.then = function () {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      var newPromise = RSVP.Promise.prototype.then.apply(this, args);
+      newPromise.cancel = promise.cancel;
+      newPromise.then = promise.then;
+      return newPromise;
+    };
+    request.onabort = bind(this, function () {
+      this.onabort();
+      aborted.resolve();
+    });
+
+    this.setRequestHeader = function (header, value) {
+      request.setRequestHeader(header, value);
+    };
+
+    this.open = function (method, url, _) {
+      var username = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+      var password = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+
+      request.open(method, url, true, username, password);
+    };
+
+    this.send = function (data) {
+      request.send(data);
+      return promise;
+    };
+
+    this.onprogress = this.onprogress || function () {};
+    this.ontimeout = this.ontimeout || function () {};
+    this.onabort = this.onabort || function () {};
+
+    request.onloadstart = request.onprogress = request.onloadend = bind(this, function (evt) {
+      this.onprogress(evt);
+    });
+
+    if (request.upload) {
+      request.upload.onprogress = request.onprogress;
+    }
+
+    request.onload = bind(this, function () {
+      var response = parseResponse(request);
+      if (Math.floor(response.status / 200) === 1) {
+        resolve(response);
+      } else {
+        reject(response);
+      }
+    });
+
+    request.onerror = bind(this, function () {
+      reject(parseResponse(request));
+    });
+
+    Object.defineProperty(this, 'timeout', {
+      get: function get() {
+        return request.timeout;
+      },
+      set: function set(timeout) {
+        request.timeout = timeout;
+      },
+
+      enumerable: true,
+      configurable: false
+    });
+
+    request.ontimeout = bind(this, function () {
+      this.ontimeout();
+      reject(parseResponse(request));
+    });
+  };
+
+  var RSVP = Ember.RSVP,
+      $ = Ember.$;
+  var bind = Ember.run.bind;
+
+
+  function getHeader(headers, header) {
+    var headerKeys = Object.keys(headers);
+    var headerIdx = headerKeys.map(function (key) {
+      return key.toLowerCase();
+    }).indexOf(header.toLowerCase());
+    if (headerIdx !== -1) {
+      return headers[headerKeys[headerIdx]];
+    }
+    return null;
+  }
+
+  function parseResponse(request) {
+    var body = (0, _trim.default)(request.responseText);
+    var rawHeaders = request.getAllResponseHeaders().split(/\n|\r/).filter(function (header) {
+      return header !== '';
+    });
+
+    var headers = rawHeaders.reduce(function (E, header) {
+      var parts = header.split(/^([0-9A-Za-z_-]*:)/);
+      if (parts.length > 0) {
+        E[parts[1].slice(0, -1)] = (0, _trim.default)(parts[2]);
+      }
+      return E;
+    }, {});
+
+    var contentType = (getHeader(headers, 'Content-Type') || '').split(';');
+
+    // Parse body according to the Content-Type received by the server
+    if (contentType.indexOf('text/html') !== -1) {
+      body = $.parseHTML(body);
+    } else if (contentType.indexOf('text/xml') !== -1) {
+      body = $.parseXML(body);
+    } else if (contentType.indexOf('application/json') !== -1 || contentType.indexOf('application/vnd.api+json') !== -1 || contentType.indexOf('text/javascript') !== -1 || contentType.indexOf('application/javascript') !== -1) {
+      body = $.parseJSON(body);
+    }
+
+    return {
+      status: request.status,
+      body: body,
+      headers: headers
+    };
+  }
+});
+;define('ember-file-upload/system/trim', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var trim;
+
+  if (String.prototype.trim) {
+    trim = function trim(string) {
+      return (string || '').trim();
+    };
+  } else {
+    // Make sure we trim BOM and NBSP
+    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+    trim = function trim(string) {
+      return (string || '').replace(rtrim, '');
+    };
+  }
+
+  exports.default = trim;
+});
+;define('ember-file-upload/system/uuid', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  /* eslint no-empty: ["error", { "allowEmptyCatch": true }] */
+  /* global Uint8Array */
+  var random = function () {
+    var crypto = window.crypto || window.msCrypto;
+
+    var numbers = void 0;
+    if (crypto && crypto.getRandomValues) {
+      numbers = new Uint8Array(16);
+      var rng = function rng() {
+        crypto.getRandomValues(numbers);
+        return numbers;
+      };
+
+      try {
+        rng();
+        return rng;
+      } catch (e) {}
+    }
+
+    numbers = new Array(16);
+    return function () {
+      var r = void 0;
+      for (var i = 0; i < 16; i++) {
+        if ((i & 0x03) === 0) {
+          r = Math.random() * 0x100000000;
+        }
+
+        numbers[i] = r >>> ((i & 0x03) << 3) & 0xFF;
+        return numbers;
+      }
+    };
+  }();
+
+  function byteToHex(number) {
+    return (number + 0x100).toString(16).substr(1);
+  }
+
+  function serialize(bytes) {
+    var hex = [];
+    for (var i = 0, len = bytes.length; i < len; i++) {
+      hex[i] = byteToHex(bytes[i]);
+    }
+
+    return hex.slice(0, 4).join('') + '-' + hex.slice(4, 6).join('') + '-' + hex.slice(6, 8).join('') + '-' + hex.slice(8, 10).join('') + '-' + hex.slice(10).join('');
+  }
+
+  function uuid() {
+    var numbers = random();
+
+    numbers[6] = numbers[6] & 0x0f | 0x40;
+    numbers[8] = numbers[8] & 0x3f | 0x80;
+
+    return serialize(numbers);
+  }
+
+  uuid.short = function () {
+    var result = uuid();
+
+    return result.slice(0, 4) + result.slice(5, 6);
+  };
+
+  exports.default = uuid;
+});
 ;define('ember-inflector/index', ['exports', 'ember-inflector/lib/system', 'ember-inflector/lib/ext/string'], function (exports, _system) {
   'use strict';
 

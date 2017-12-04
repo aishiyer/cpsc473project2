@@ -32,6 +32,32 @@ define('project-app/app', ['exports', 'project-app/resolver', 'ember-load-initia
 
   exports.default = App;
 });
+define('project-app/components/file-dropzone', ['exports', 'ember-file-upload/components/file-dropzone/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
+define('project-app/components/file-upload', ['exports', 'ember-file-upload/components/file-upload/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
 define('project-app/components/torii-iframe-placeholder', ['exports', 'torii/components/torii-iframe-placeholder'], function (exports, _toriiIframePlaceholder) {
   'use strict';
 
@@ -194,6 +220,19 @@ define('project-app/helpers/app-version', ['exports', 'project-app/config/enviro
   }
 
   exports.default = Ember.Helper.helper(appVersion);
+});
+define('project-app/helpers/file-queue', ['exports', 'ember-file-upload/helpers/file-queue'], function (exports, _fileQueue) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _fileQueue.default;
+    }
+  });
 });
 define('project-app/helpers/pluralize', ['exports', 'ember-inflector/lib/helpers/pluralize'], function (exports, _pluralize) {
   'use strict';
@@ -561,6 +600,7 @@ define('project-app/router', ['exports', 'project-app/config/environment'], func
     this.route('sign-up');
     this.route('sign-in');
     this.route('protected');
+    this.route('upload');
   });
 
   exports.default = Router;
@@ -720,6 +760,15 @@ define('project-app/routes/sign-up', ['exports', 'firebase'], function (exports,
     }
   });
 });
+define('project-app/routes/upload', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var Route = Ember.Route;
+  exports.default = Route.extend({});
+});
 define('project-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], function (exports, _ajax) {
   'use strict';
 
@@ -730,6 +779,19 @@ define('project-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], fun
     enumerable: true,
     get: function () {
       return _ajax.default;
+    }
+  });
+});
+define('project-app/services/file-queue', ['exports', 'ember-file-upload/services/file-queue'], function (exports, _fileQueue) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _fileQueue.default;
     }
   });
 });
@@ -802,7 +864,7 @@ define("project-app/templates/application", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "D/X/EPrB", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n  \"],[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n\\n\\n        \"],[8],[0,\"\\n        \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n        \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n    \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"messages\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Messages\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"pictures\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Pictures Library\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"sign-up\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"SIGN UP\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"sign-in\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"SIGN IN\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n      \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n    \"],[8],[2,\" /.container-fluid \"],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"jumbotron text-center\"],[7],[0,\"\\n    \"],[4,\"link-to\",[\"pictures\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"All Pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"pictures.new\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"Add new pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/application.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "/srfjM/H", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"container\"],[7],[0,\"\\n  \"],[6,\"nav\"],[9,\"class\",\"navbar navbar-inverse\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"container-fluid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"navbar-header\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"type\",\"button\"],[9,\"class\",\"navbar-toggle collapsed\"],[9,\"data-toggle\",\"collapse\"],[9,\"data-target\",\"#main-navbar\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"sr-only\"],[7],[0,\"Toggle navigation\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"icon-bar\"],[7],[8],[0,\"\\n\\n\\n        \"],[8],[0,\"\\n        \"],[4,\"link-to\",[\"index\"],[[\"class\"],[\"navbar-brand\"]],{\"statements\":[[0,\"Project 2\"]],\"parameters\":[]},null],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"collapse navbar-collapse\"],[9,\"id\",\"main-navbar\"],[7],[0,\"\\n        \"],[6,\"ul\"],[9,\"class\",\"nav navbar-nav\"],[7],[0,\"\\n    \"],[4,\"link-to\",[\"index\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Home\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"about\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"About\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"messages\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Messages\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"pictures\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"Pictures Library\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"sign-up\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"SIGN UP\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"sign-in\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"SIGN IN\"],[8]],\"parameters\":[]},null],[0,\"\\n    \"],[4,\"link-to\",[\"upload\"],[[\"tagName\"],[\"li\"]],{\"statements\":[[6,\"a\"],[9,\"href\",\"\"],[7],[0,\"upload\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n      \"],[8],[2,\" /.navbar-collapse \"],[0,\"\\n    \"],[8],[2,\" /.container-fluid \"],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/application.hbs" } });
 });
 define("project-app/templates/home", ["exports"], function (exports) {
   "use strict";
@@ -842,7 +904,7 @@ define("project-app/templates/pictures", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "qF2bI1BB", "block": "{\"symbols\":[\"picture\"],\"statements\":[[6,\"h1\"],[7],[0,\"Pictures Page\"],[8],[0,\"\\n\"],[6,\"p\"],[7],[0,\" Can i put more stuff here?\"],[8],[0,\"\\n\\n\"],[2,\" create-thing/template.hbs \"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"col-md-6 col-md-offset-3\"],[7],[0,\"\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n  \"],[6,\"section\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Picture List\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"\\n      \"],[6,\"span\"],[7],[6,\"strong\"],[7],[1,[19,1,[\"title\"]],false],[8],[0,\" - \"],[6,\"em\"],[7],[1,[19,1,[\"description\"]],false],[8],[8],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"btn btn-danger\"],[3,\"action\",[[19,0,[]],\"deleteBook\",[19,1,[]]]],[7],[0,\"Delete\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/pictures.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "ElOBjOoc", "block": "{\"symbols\":[\"picture\"],\"statements\":[[6,\"h1\"],[7],[0,\"Pictures Page\"],[8],[0,\"\\n\"],[6,\"p\"],[7],[0,\" Can i put more stuff here?\"],[8],[0,\"\\n\\n\"],[2,\" create-thing/template.hbs \"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"col-md-6 col-md-offset-3\"],[7],[0,\"\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n  \"],[6,\"section\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Picture List\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"\\n      \"],[6,\"span\"],[7],[6,\"strong\"],[7],[1,[19,1,[\"title\"]],false],[8],[0,\" - \"],[6,\"em\"],[7],[1,[19,1,[\"description\"]],false],[8],[8],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"btn btn-danger\"],[3,\"action\",[[19,0,[]],\"deleteBook\",[19,1,[]]]],[7],[0,\"Delete\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\\n\\n\"],[6,\"div\"],[9,\"class\",\"jumbotron text-center\"],[7],[0,\"\\n  \"],[4,\"link-to\",[\"pictures\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"All Pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[4,\"link-to\",[\"pictures.new\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"Add new pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/pictures.hbs" } });
 });
 define("project-app/templates/pictures/new", ["exports"], function (exports) {
   "use strict";
@@ -875,6 +937,14 @@ define("project-app/templates/sign-up", ["exports"], function (exports) {
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "j8FknKW+", "block": "{\"symbols\":[],\"statements\":[[0,\"Signup here: \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"email\"]],\"Email\"]]],false],[6,\"br\"],[7],[8],[0,\"\\n\"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"password\"]],\"Password\"]]],false],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"signUp\"]],[7],[0,\" Sign Up \"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/sign-up.hbs" } });
+});
+define("project-app/templates/upload", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "4Kb2Dt+7", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"col-sm-2 col-sm-offset-1\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"nav-categories\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"id\",\"image-upload-wrapper\"],[7],[0,\"\\n  \"],[6,\"label\"],[9,\"for\",\"new post\"],[7],[0,\"Upload an image\"],[8],[0,\"\\n  \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"name\",\"new-post\"],[9,\"id\",\"new-post\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n  \"],[6,\"ul\"],[7],[0,\"\\n    \"],[6,\"li\"],[7],[4,\"link-to\",[\"posts\"],null,{\"statements\":[[0,\"All\"]],\"parameters\":[]},null],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"col-sm-8\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"photo-container\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"sortedPosts\"]],[20,[\"as\"]],[20,[\"post\"]]],null,{\"statements\":[[0,\"      \"],[1,[25,\"post-tile\",null,[[\"post\"],[[20,[\"post\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/upload.hbs" } });
 });
 define('project-app/torii-adapters/application', ['exports', 'emberfire/torii-adapters/firebase'], function (exports, _firebase) {
   'use strict';
@@ -916,6 +986,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("project-app/app")["default"].create({"name":"project-app","version":"0.0.0+10438c22"});
+  require("project-app/app")["default"].create({"name":"project-app","version":"0.0.0+e1b18744"});
 }
 //# sourceMappingURL=project-app.map
