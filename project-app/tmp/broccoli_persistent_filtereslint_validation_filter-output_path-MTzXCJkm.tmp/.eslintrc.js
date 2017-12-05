@@ -1,0 +1,1 @@
+/Users/aish/Documents/GitHub/cpsc473project2/project-app/tmp/broccoli_persistent_filtereslint_validation_filter-input_base_path-NH3JuREJ.tmp/.eslintrc.js

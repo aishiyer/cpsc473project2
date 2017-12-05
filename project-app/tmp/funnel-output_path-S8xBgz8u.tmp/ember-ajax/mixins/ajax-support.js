@@ -1,0 +1,1 @@
+/Users/aish/Documents/GitHub/cpsc473project2/project-app/tmp/funnel-input_base_path-a3t3J3hv.tmp/mixins/ajax-support.js

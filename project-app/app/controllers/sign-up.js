@@ -13,7 +13,10 @@ export default Ember.Controller.extend({
           id: userResponse.uid,
           email: userResponse.email
         });
-        return user.save();
+        return user.save()
+        .then(function() {
+            this.transitionTo('application');
+        }.bind(this));
       });
     }
   }

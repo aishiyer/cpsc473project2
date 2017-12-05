@@ -3,10 +3,13 @@
 
 <div class="jumbotron">
   <div class="container">
-    <h1>Welcome!</h1>
 
+    <h1>Welcome!</h1>
+    
   </div>
-</div>
+  </div>
+
+
 
 <div class="container">
 
@@ -19,29 +22,39 @@
 </div>
 
 {{else}}
-<div class="jumbotron">
-  <div class="container">
-    <h1>Welcome to App!</h1>
-      <h2>You must be signed in to use this app</h2>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<style>
+body,h1 {font-family: "Raleway", sans-serif}
+body, html {height: 200%}
+</style>
+<body>
+
+<div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
+  <div class="w3-display-middle">
+    <div class='page-header'>
+      <p></p>
+        <h1 class="w3-jumbo w3-animate-top">HELLO</h1>
+        <h2>You must be signed in to use this app</h2>
+      </div>
+      <div class='list-group'>
+        {{#link-to 'sign-up' class='list-group-item'}}
+          REGISTER
+          {{/link-to}}
+        {{#link-to 'sign-in' class='list-group-item'}}
+          LOG-IN
+          {{/link-to}}
+        </div>
+    <hr class="w3-border-grey" style="margin:auto;width:40%">
   </div>
 </div>
-<div class='list-group'>
-  {{#link-to 'sign-up' class='list-group-item'}}
-    Sign Up
-    {{/link-to}}
-  {{#link-to 'sign-in' class='list-group-item'}}
-    Sign In
-    {{/link-to}}
-  </div>
-  {{/if}}
 
-  <div class="container">
+</body>
+
+{{/if}}
 
 
-    <!-- footer -->
-    <footer>
-      <p>Group Members: Aishwarya Iyer, Joshua Marvel, Tevisophea Heng, Kimberly Nguyen, Briana Hernandez</p>
-
-    </footer>
-  </div>
 <!-- /container -->
