@@ -1,0 +1,10 @@
+{{outlet}}
+<h1>Movies</h1>
+{{#each model as |movie|}}
+	<div class="well">
+		<h4>{{#link-to 'movies.edit' movie.id}}{{movie.title}}{{/link-to}}</h4>
+		<p>Rating: {{movie.rating}}</p>
+		<p>Description: {{movie.description}}</p>
+		<button {{action 'deleteMovie' movie.id}} class="btn btn-danger">Delete</button>
+	</div>
+{{/each}}

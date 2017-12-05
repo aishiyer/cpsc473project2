@@ -1,0 +1,15 @@
+<form>
+	<div class="form-group">
+		<label>Title</label>
+		{{input type="text" class="form-control" value=title placeholder="Add Movie..."}}
+	</div>
+	<div class="form-group">
+		<label>Rating</label>
+		{{input type="text" class="form-control" value=rating placeholder="Add A Rating Out of 10..."}}
+	</div>
+	<div class="form-group">
+		<label>Description</label>
+		{{textarea class="form-control" value=description placeholder="Describe The Movie..."}}
+	</div>
+	<button {{action 'addMovie'}} class="btn btn-primary">Submit</button>
+</form>

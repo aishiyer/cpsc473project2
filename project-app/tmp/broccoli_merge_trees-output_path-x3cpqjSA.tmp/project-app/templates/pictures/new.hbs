@@ -1,0 +1,14 @@
+<h2 id="newPictures">New Pictures</h2>
+<form>
+  <div class="form-group">
+    <label for="titleInput">Title</label>
+    {{input value=title placeholder="Title" class="form-control" id="titleInput"}}
+  </div>
+  <div class="form-group">
+    <label for="descriptionInput">Description</label>
+    {{input value=desc placeholder="Author" class="form-control" id="descriptionInput"}}
+  </div>
+
+  <button {{action "publishPictures"}} class="btn btn-default">Publish</button>
+</form>
+{{outlet}}
