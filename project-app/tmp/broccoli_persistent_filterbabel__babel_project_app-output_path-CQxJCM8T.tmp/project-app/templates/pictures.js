@@ -1,0 +1,8 @@
+define("project-app/templates/pictures", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "2xhT/47t", "block": "{\"symbols\":[\"picture\"],\"statements\":[[6,\"h1\"],[7],[0,\"Pictures Page\"],[8],[0,\"\\n\"],[6,\"p\"],[7],[0,\" Can i put more stuff here?\"],[8],[0,\"\\n\\n\"],[2,\" create-thing/template.hbs \"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"col-md-6 col-md-offset-3\"],[7],[0,\"\\n  \"],[1,[18,\"outlet\"],false],[0,\"\\n  \"],[6,\"section\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Picture List\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"\\n      \"],[6,\"span\"],[7],[6,\"strong\"],[7],[1,[19,1,[\"title\"]],false],[8],[0,\" - \"],[6,\"em\"],[7],[1,[19,1,[\"description\"]],false],[8],[8],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"btn btn-danger\"],[3,\"action\",[[19,0,[]],\"deleteBook\",[19,1,[]]]],[7],[0,\"Delete\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"class\",\"jumbotron text-center\"],[7],[0,\"\\n  \"],[4,\"link-to\",[\"pictures\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"All Pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n  \"],[4,\"link-to\",[\"pictures.new\"],null,{\"statements\":[[6,\"button\"],[9,\"class\",\"btn btn-primary\"],[7],[0,\"Add new pictures\"],[8]],\"parameters\":[]},null],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "project-app/templates/pictures.hbs" } });
+});
