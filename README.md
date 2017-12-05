@@ -1,11 +1,11 @@
 # cpsc473project2
 
-What is left to do:
 
-2. RATING (pictures.hbs) Create a form where the user can enter in the title, description.
 
 DONE:
 1. RATING (pictures.hbs) Create a rating library so you can see all the movies you have added.
+
+2. RATING (pictures.hbs) Create a form where the user can enter in the title, description.
 
 3. MESSAGES (messages.hbs) Create a messaging system where two users can communicate with each other. In order to do this, we need login authentication. OR we can do a mail system which also requires login authentication.
 https://github.com/ahaurw01/emberfire-chat
