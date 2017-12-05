@@ -1,0 +1,1 @@
+/Users/Kimberly/Documents/GitHub/cpsc473project2/project-app/tmp/broccoli_merge_trees-input_base_path-IZ9ONaaJ.tmp/2/helpers/module-for-acceptance.js

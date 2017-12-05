@@ -1,0 +1,1 @@
+/Users/Kimberly/Documents/GitHub/cpsc473project2/project-app/tmp/broccoli_merge_trees-input_base_path-6TAFvf6N.tmp/0/modules/ember-data/setup-container.js
