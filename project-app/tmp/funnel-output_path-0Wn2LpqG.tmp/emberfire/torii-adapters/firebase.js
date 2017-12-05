@@ -1,0 +1,1 @@
+/Users/Kimberly/Documents/GitHub/cpsc473project2/project-app/tmp/funnel-input_base_path-uiogNR3A.tmp/torii-adapters/firebase.js
